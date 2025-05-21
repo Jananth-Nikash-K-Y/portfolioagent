@@ -81,7 +81,7 @@ async def chat(request: Request):
     try:
         data = await request.json()
         user_message = data['message']
-        result = qa_chain({'question': user_message, 'chat_history': memory.load_memory_variables({})['chat_history']})
+        result = qa_chain.invoke({'question': user_message, 'chat_history': memory.load_memory_variables({})['chat_history']})
         answer = result['answer']
         if 'Sorry' in answer or 'I do not know' in answer or 'I am not sure' in answer:
             answer = "I'm only able to answer questions about Jananth's portfolio. Please ask something related!"
