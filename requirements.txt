@@ -1,12 +1,13 @@
 fastapi
 uvicorn
 python-dotenv
-langchain
 transformers
 huggingface-hub
 faiss-cpu
 pyttsx3
-langchain_community
+langchain==0.1.14
+langchain-community==0.0.33
+langchain-huggingface==0.0.2 
 torch
 torchvision
 torchaudio
