@@ -6,3 +6,4 @@ transformers
 huggingface-hub
 faiss-cpu
 pyttsx3
+langchain_community
