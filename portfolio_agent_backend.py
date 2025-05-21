@@ -3,10 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferWindowMemory
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings, HuggingFaceHub
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
-from langchain_community.llms import HuggingFaceHub
 from dotenv import load_dotenv
 import tempfile
 import pyttsx3
@@ -94,7 +93,9 @@ async def chat(request: Request):
 async def voice(request: Request):
     try:
         data = await request.json()
-        text = data['text']
+        text = data.get("text")
+        if not text:
+            raise ValueError("Missing 'text' in request payload")
         engine = pyttsx3.init()
         with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as tf:
             engine.save_to_file(text, tf.name)

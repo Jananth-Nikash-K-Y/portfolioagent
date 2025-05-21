@@ -8,6 +8,7 @@ pyttsx3
 langchain==0.1.14
 langchain-community==0.0.33
 langchain-huggingface==0.0.2 
+huggingface_hub==0.22.2
 torch
 torchvision
 torchaudio
