@@ -2,11 +2,11 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferWindowMemory
-from langchain.vectorstores import FAISS
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
-from langchain_community.llms import Ollama
+from langchain_community.llms import HuggingFaceHub
 from dotenv import load_dotenv
 import tempfile
 import pyttsx3
@@ -29,26 +29,26 @@ app.add_middleware(
 
 def init_components():
     try:
-        portfolio_path = Path(__file__).parent / 'portfolio.txt'
+        portfolio_path = 'portfolio.txt'
         with open(portfolio_path, encoding='utf-8') as f:
             portfolio_text = f.read()
 
         docs = [Document(page_content=chunk) for chunk in CharacterTextSplitter(
             chunk_size=500, chunk_overlap=50).split_text(portfolio_text)]
 
-        # Ollama embeddings
-        ollama_base_url = os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434')
-        embeddings = OllamaEmbeddings(
-            model="nomic-embed-text",
-            base_url=ollama_base_url
+        # Use HuggingFace embeddings
+        embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",  # Small, fast, and free
+            cache_folder="./hf_cache"
         )
+
         vectorstore = FAISS.from_documents(docs, embeddings)
 
-        # Ollama LLM
-        llm = Ollama(
-            model="tinyllama",
-            base_url=ollama_base_url,
-            temperature=0.5
+        # Use HuggingFace LLM
+        llm = HuggingFaceHub(
+            repo_id="google/flan-t5-base",  # Small free model
+            model_kwargs={"temperature": 0.5, "max_length": 512},
+            huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
         )
 
         memory = ConversationBufferWindowMemory(k=2, memory_key='chat_history', return_messages=True)
