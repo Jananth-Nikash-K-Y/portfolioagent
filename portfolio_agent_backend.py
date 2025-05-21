@@ -8,6 +8,8 @@ from langchain_community.llms import HuggingFaceHub
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
 from dotenv import load_dotenv
+from huggingface_hub import InferenceClient
+
 import tempfile
 import pyttsx3
 import os
@@ -27,6 +29,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+class CustomHFLLM(LLM):
+    def __init__(self, repo_id: str, token: str):
+        super().__init__()
+        self.client = InferenceClient(repo_id, token=token)
+
+    def _call(self, prompt: str, stop: list = None) -> str:
+        response = self.client.text_generation(prompt, max_new_tokens=200)
+        return response.strip()
+
+    @property
+    def _llm_type(self) -> str:
+        return "custom-huggingface"
+
 def init_components():
     try:
         portfolio_path = 'portfolio.txt'
@@ -45,10 +61,9 @@ def init_components():
         vectorstore = FAISS.from_documents(docs, embeddings)
 
         # Use HuggingFace LLM
-        llm = HuggingFaceHub(
-            repo_id="google/flan-t5-base",  # Small free model
-            model_kwargs={"temperature": 0.5, "max_length": 512},
-            huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
+        llm = CustomHFLLM(
+            repo_id="google/flan-t5-base",
+            token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
         )
 
         memory = ConversationBufferWindowMemory(k=2, memory_key='chat_history', return_messages=True)
