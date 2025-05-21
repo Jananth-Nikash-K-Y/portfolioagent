@@ -1,0 +1,100 @@
+# Jananth Nikash K Y - Portfolio
+
+## About Me
+I'm Jananth, an AI Engineer specializing in AI agents, model development, and full-stack solutions that bridge innovation with practical applications. I focus on building the future with AI & Engineering.
+
+## Contact Information
+- Email: jananthnikash.ky@outlook.in
+- Phone: +91 82203224--
+- Location: Vellore, TN
+- Social Media:
+  - GitHub: https://github.com/Jananth-Nikash-K-Y/
+  - LinkedIn: https://in.linkedin.com/in/jananth-nikash-k-y
+  - Twitter: https://x.com/JananthNikashKY
+
+## Work Experience
+
+### AI Engineer at Tata Consultancy Services (Dec 2024 - Present)
+Location: Chennai, India
+- Led the AI integration for ContAI, enhancing global container tracking with GenAI APIs
+- Developed and deployed AI/ML systems into full-stack enterprise applications
+- Contributed to AI-driven automation initiatives and scalable microservices for logistics
+Technologies: Python ML Libraries, Agentic AI, GenAI, Langchain
+
+### Full Stack Developer at Tata Consultancy Services (Sep 2023 - Nov 2024)
+Location: Chennai, India
+- Developed APIs using FastAPI for supply chain and logistics solutions
+- Implemented Apache Beam pipelines to process and transform large-scale datasets
+- Managed backend logic and data engineering to support predictive analytics
+Technologies: Python, FastAPI, Apache Beam, Flask, PostgreSQL, Azure Service
+
+### Frontend Developer at Tata Consultancy Services (Feb 2022 - Aug 2023)
+Location: Chennai, India
+- Designed user interfaces for the Scot-IP and warehouse management systems using Angular
+- Integrated Keycloak for secure user authentication and authorization
+- Contributed to projects that passed TCS IP-Safe and earned patent recognition
+Technologies: Angular, TypeScript, Keycloak, Three.js
+
+## Skills & Expertise
+- Frontend: Angular, React, TypeScript, JavaScript, HTML, CSS, Tailwind CSS
+- Backend: Python, FastAPI, Flask, Node.js
+- AI/ML: TensorFlow, YOLO, CNN, scikit-learn, Pandas, Numpy
+- Databases: PostgreSQL, MongoDB, MySQL
+- DevOps: Git, GitHub, Docker
+- Cloud: Azure, Firebase
+- Other: Apache Kafka, Apache Beam, ML Flow, Three.js
+
+## Featured Projects
+
+### ContAI - Container Tracking System
+Category: Frontend
+Description: Pioneered ContAI's Container Tracking System, optimizing global logistics and enhancing system intelligence with GenAI APIs.
+Technologies: Angular, GenAI, Azure AI Foundry
+
+### Safety Stock Solution for Warehouse Management
+Category: Frontend
+Description: Developed a safety stock solution using Angular for the front end, FastAPI for the back end, and Apache Beam for data processing.
+Technologies: Angular, Bootstrap
+
+### Scot-IP Project
+Category: Frontend
+Description: Designed and implemented Scot-IP's UI, contributing to successful IP-Safe clearance and a patented technology solution.
+Technologies: Angular, Keycloak
+
+### Data Engineering for Stock and Logistics Analysis
+Category: Full Stack
+Description: Developed a full-stack solution for stock and logistics data analysis, integrating event and stream processing with Apache Kafka to manage real-time data.
+Technologies: Python, Apache Kafka & Beam, FastAPI, ADL
+
+### Slotting Optimization for Stocks and Containers
+Category: Backend
+Description: Built a full-stack slotting optimization solution for warehouse stock and container management, improving stock placement and operational efficiency.
+Technologies: Angular, Python, FastAPI, PostgreSQL, Azure Service
+
+### AI Model - Deployment and Analysis Service
+Category: Backend
+Description: Developed a platform for uploading, deploying, and running AI models as a service, providing real-time analysis of uploaded files and models.
+Technologies: Python, FastAPI, MLOps, PostgreSQL
+
+### YOLO Model for Pallet Identification and Anomaly Detection
+Category: AI & ML
+Description: Developed a machine learning model for pallet identification and anomaly detection using Convolutional Neural Networks (CNN) and YOLO for real-time object detection.
+Technologies: CNN, YOLO, Python, TensorFlow, OpenCV
+
+### Portfolio Website
+Category: Personal Project
+Description: Building an interactive portfolio website to showcase my projects, skills, and professional journey with modern web technologies.
+Technologies: HTML, CSS, JavaScript, React
+GitHub: https://github.com/Jananth-Nikash-K-Y/portfolio
+
+### Version Controlled Resume (LaTeX)
+Category: Personal Project
+Description: Created a version-controlled resume built with LaTeX, allowing for easy updates and management using Git.
+Technologies: LaTeX, Tex, GitHub
+GitHub: https://github.com/Jananth-Nikash-K-Y/Resume-template-Latex
+
+### Autonomous Logistics Agent using LangChain and Ollama
+Category: AI & ML
+Description: Developed an AI-powered logistics agent using LangChain and Ollama that performs warehouse and stock-related tasks autonomously by chaining tools and responding intelligently to complex inputs.
+Technologies: LangChain, Ollama, Python
+GitHub: https://github.com/Jananth-Nikash-K-Y/autobot 
