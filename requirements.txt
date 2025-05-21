@@ -9,6 +9,7 @@ langchain==0.1.14
 langchain-community==0.0.33
 langchain-huggingface==0.0.2 
 huggingface_hub
+langchain-core==0.1.36
 torch
 torchvision
 torchaudio
