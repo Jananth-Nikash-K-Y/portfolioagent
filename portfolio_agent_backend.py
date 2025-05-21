@@ -10,6 +10,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
+from pydantic import PrivateAttr
 
 import tempfile
 import pyttsx3
@@ -32,17 +33,22 @@ app.add_middleware(
 
 
 class CustomHFLLM(LLM):
-    def __init__(self, repo_id: str, token: str):
-        super().__init__()
-        self.client = InferenceClient(repo_id, token=token)
+    repo_id: str
+    token: str
+    _client: InferenceClient = PrivateAttr()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._client = InferenceClient(self.repo_id, token=self.token)
 
     def _call(self, prompt: str, stop: list = None) -> str:
-        response = self.client.text_generation(prompt, max_new_tokens=200)
+        response = self._client.text_generation(prompt, max_new_tokens=200)
         return response.strip()
 
     @property
     def _llm_type(self) -> str:
         return "custom-huggingface"
+
 
 def init_components():
     try:
