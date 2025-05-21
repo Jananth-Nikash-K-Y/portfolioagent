@@ -3,7 +3,7 @@ services:
     name: portfolio-agent
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn server.portfolio_agent_backend:app --host 0.0.0.0 --port 8000
+    startCommand: uvicorn portfolio_agent_backend:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: OLLAMA_BASE_URL
         value: http://ollama:11434
@@ -14,4 +14,4 @@ services:
     plan: standard
     resources:
       memory: 1GB
-      cpu: 1 
+      cpu: 1
