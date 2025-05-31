@@ -20,9 +20,9 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, you might want to restrict this
-    allow_credentials=False,  # Changed to False since we're using "*" for origins
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_origins=["https://leafy-hotteok-051505.netlify.app"],  # or ["*"] for all (not secure)
+    allow_credentials=True,
+    allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"]
 )
