@@ -14,7 +14,6 @@ import pyttsx3
 import os
 import json
 import torch
-import gc
 
 load_dotenv()
 
@@ -31,11 +30,6 @@ app.add_middleware(
 
 def init_components():
     try:
-        # Clear any existing CUDA memory
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-        gc.collect()
-
         # Load portfolio
         with open('portfolio.txt', encoding='utf-8') as f:
             portfolio_text = f.read()
@@ -43,23 +37,18 @@ def init_components():
         text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         docs = [Document(page_content=chunk) for chunk in text_splitter.split_text(portfolio_text)]
 
-        # Use a smaller embedding model with reduced precision
+        # Use a smaller embedding model
         embeddings = HuggingFaceEmbeddings(
-            model_name="paraphrase-MiniLM-L3-v2",
-            cache_folder="./hf_cache",
-            model_kwargs={'device': 'cpu'}
+            model_name="paraphrase-MiniLM-L3-v2",  # Smaller model
+            cache_folder="./hf_cache"
         )
 
         vectorstore = FAISS.from_documents(docs, embeddings)
 
-        # Use a smaller language model with reduced precision
-        model_name = "google/flan-t5-small"
+        # Use a smaller language model
+        model_name = "google/flan-t5-small"  # Smaller model
         tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForSeq2SeqGeneration.from_pretrained(
-            model_name,
-            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            low_cpu_mem_usage=True
-        )
+        model = AutoModelForSeq2SeqGeneration.from_pretrained(model_name)
         
         # Enable model optimization
         model.eval()
@@ -73,11 +62,7 @@ def init_components():
             model=model,
             tokenizer=tokenizer,
             device=-1,  # CPU
-            model_kwargs={
-                "max_length": 256,
-                "do_sample": False,
-                "num_beams": 1
-            }
+            model_kwargs={"max_length": 256}  # Reduced max length
         )
         llm = HuggingFacePipeline(pipeline=hf_pipeline)
 
@@ -132,5 +117,4 @@ async def voice(request: Request):
 
 if __name__ == "__main__":
     import uvicorn
-    # Use a single worker to reduce memory usage
-    uvicorn.run("portfolio_agent_backend:app", host="0.0.0.0", port=8000, workers=1)
+    uvicorn.run("portfolio_agent_backend:app", host="0.0.0.0", port=8000)
