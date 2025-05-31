@@ -3,8 +3,10 @@ services:
     name: portfolio-agent
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn portfolio_agent_backend:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn portfolio_agent_backend:app --host 0.0.0.0 --port $PORT --workers 1
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
       - key: OLLAMA_BASE_URL
         value: http://ollama:11434
       - key: EMBEDDING_MODEL
