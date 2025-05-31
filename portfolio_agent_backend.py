@@ -7,12 +7,13 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
 from langchain.llms import HuggingFacePipeline
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqGeneration
 from dotenv import load_dotenv
 import tempfile
 import pyttsx3
 import os
 import json
+import torch
 
 load_dotenv()
 
@@ -36,20 +37,32 @@ def init_components():
         text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         docs = [Document(page_content=chunk) for chunk in text_splitter.split_text(portfolio_text)]
 
-        # Use sentence-transformer on CPU
+        # Use a smaller embedding model
         embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_name="paraphrase-MiniLM-L3-v2",  # Smaller model
             cache_folder="./hf_cache"
         )
 
         vectorstore = FAISS.from_documents(docs, embeddings)
 
-        # Create Hugging Face pipeline LLM
+        # Use a smaller language model
+        model_name = "google/flan-t5-small"  # Smaller model
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSeq2SeqGeneration.from_pretrained(model_name)
+        
+        # Enable model optimization
+        model.eval()
+        if torch.cuda.is_available():
+            model = model.cuda()
+        else:
+            model = model.cpu()
+
         hf_pipeline = pipeline(
             task="text2text-generation",
-            model="google/flan-t5-base",
+            model=model,
+            tokenizer=tokenizer,
             device=-1,  # CPU
-            model_kwargs={"max_length": 512}
+            model_kwargs={"max_length": 256}  # Reduced max length
         )
         llm = HuggingFacePipeline(pipeline=hf_pipeline)
 
