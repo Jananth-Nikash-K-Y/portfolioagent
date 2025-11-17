@@ -7,7 +7,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
 from langchain.llms import HuggingFacePipeline
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqGeneration
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 from dotenv import load_dotenv
 import tempfile
 import pyttsx3
@@ -48,7 +48,7 @@ def init_components():
         # Use a smaller language model
         model_name = "google/flan-t5-small"  # Smaller model
         tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForSeq2SeqGeneration.from_pretrained(model_name)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
         
         # Enable model optimization
         model.eval()
