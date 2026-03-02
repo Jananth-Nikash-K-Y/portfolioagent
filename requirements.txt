@@ -1,12 +1,6 @@
 fastapi
 uvicorn
-python-dotenv
-pydantic
-faiss-cpu
-langchain==0.1.14
-langchain-community==0.0.33
-langchain-core
+langchain
 langchain-groq
-sentence-transformers
-huggingface-hub
-gTTS
+python-dotenv
+gtts
