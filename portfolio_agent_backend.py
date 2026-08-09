@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from langchain_groq import ChatGroq
-from gtts import gTTS
 from dotenv import load_dotenv
-import tempfile
 import os
 import base64
+import tempfile
+import logging
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # =========================
 # Request Models
@@ -17,10 +18,8 @@ import base64
 class ChatRequest(BaseModel):
     message: str = "Hi"
 
-
 class VoiceRequest(BaseModel):
     text: str
-
 
 # =========================
 # Environment Setup
@@ -39,43 +38,53 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # =========================
-# Initialize LLM + Portfolio
+# Lazy-loaded components
 # =========================
 
-def init_components():
-    groq_api_key = os.getenv("GROQ_API_KEY")
+_ask_portfolio = None
+_init_error = None
 
-    if not groq_api_key:
-        raise ValueError(
-            "GROQ_API_KEY is not set. "
-            "Set it in Render environment variables."
+def get_portfolio_fn():
+    """Lazy-init the LLM + portfolio text. Errors are stored and returned gracefully."""
+    global _ask_portfolio, _init_error
+
+    if _ask_portfolio is not None:
+        return _ask_portfolio, None
+
+    if _init_error is not None:
+        return None, _init_error
+
+    try:
+        from langchain_groq import ChatGroq
+
+        groq_api_key = os.getenv("GROQ_API_KEY")
+        if not groq_api_key:
+            _init_error = "GROQ_API_KEY is not configured on the server."
+            logger.error(_init_error)
+            return None, _init_error
+
+        portfolio_path = os.path.join(BASE_DIR, "portfolio.txt")
+        if not os.path.exists(portfolio_path):
+            _init_error = "portfolio.txt not found on server."
+            logger.error(_init_error)
+            return None, _init_error
+
+        with open(portfolio_path, encoding="utf-8") as f:
+            portfolio_text = f.read()
+
+        llm = ChatGroq(
+            model_name="llama-3.3-70b-versatile",
+            temperature=0.3,
+            max_tokens=512,
+            groq_api_key=groq_api_key,
         )
 
-    # Load portfolio text once (very lightweight)
-    portfolio_path = os.path.join(BASE_DIR, "portfolio.txt")
-
-    if not os.path.exists(portfolio_path):
-        raise FileNotFoundError("portfolio.txt not found")
-
-    with open(portfolio_path, encoding="utf-8") as f:
-        portfolio_text = f.read()
-
-    llm = ChatGroq(
-        model_name="llama-3.3-70b-versatile",
-        temperature=0.3,
-        max_tokens=512,
-        groq_api_key=groq_api_key,
-    )
-
-    def ask_portfolio(question: str):
-        prompt = f"""
-You are a professional portfolio assistant for Jananth Nikash K Y.
+        def ask_portfolio(question: str) -> str:
+            prompt = f"""You are a professional portfolio assistant for Jananth Nikash K Y.
 
 You must answer ONLY using the portfolio information below.
-If the question is unrelated to Jananth's portfolio,
-politely say:
+If the question is unrelated to Jananth's portfolio, politely say:
 "I can only answer questions related to Jananth's portfolio."
 
 Portfolio Information:
@@ -84,16 +93,18 @@ Portfolio Information:
 User Question:
 {question}
 
-Answer:
-"""
-        response = llm.invoke(prompt)
-        return response.content
+Answer:"""
+            response = llm.invoke(prompt)
+            return response.content
 
-    return ask_portfolio
+        _ask_portfolio = ask_portfolio
+        logger.info("Portfolio agent initialised successfully.")
+        return _ask_portfolio, None
 
-
-# Initialize once (lightweight, safe for free tier)
-ask_portfolio = init_components()
+    except Exception as e:
+        _init_error = f"Failed to initialise agent: {str(e)}"
+        logger.error(_init_error)
+        return None, _init_error
 
 
 # =========================
@@ -102,6 +113,12 @@ ask_portfolio = init_components()
 
 @app.get("/")
 async def root():
+    _, err = get_portfolio_fn()
+    if err:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "message": err}
+        )
     return {"status": "ok", "message": "Portfolio Agent is running 🚀"}
 
 
@@ -109,30 +126,31 @@ async def root():
 async def chat(request: ChatRequest):
     try:
         if not request.message.strip():
+            return JSONResponse(status_code=400, content={"error": "Message cannot be empty"})
+
+        ask_fn, err = get_portfolio_fn()
+        if err or ask_fn is None:
+            logger.error(f"Agent not ready: {err}")
             return JSONResponse(
-                status_code=400,
-                content={"error": "Message cannot be empty"}
+                status_code=503,
+                content={"error": f"Agent not ready: {err}"}
             )
 
-        answer = ask_portfolio(request.message)
+        answer = ask_fn(request.message)
         return {"answer": answer}
 
     except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"error": f"Chat error: {str(e)}"}
-        )
+        logger.error(f"Chat error: {str(e)}")
+        return JSONResponse(status_code=500, content={"error": f"Chat error: {str(e)}"})
 
 
 @app.post("/api/voice")
 async def voice(request: VoiceRequest):
     try:
         if not request.text.strip():
-            return JSONResponse(
-                status_code=400,
-                content={"error": "Text cannot be empty"}
-            )
+            return JSONResponse(status_code=400, content={"error": "Text cannot be empty"})
 
+        from gtts import gTTS
         tts = gTTS(text=request.text, lang="en")
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tf:
@@ -143,20 +161,16 @@ async def voice(request: VoiceRequest):
             audio_bytes = f.read()
 
         os.unlink(audio_path)
-
         audio_b64 = base64.b64encode(audio_bytes).decode("utf-8")
-
         return {"audio": audio_b64, "format": "mp3"}
 
     except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"error": f"Voice generation failed: {str(e)}"}
-        )
+        logger.error(f"Voice error: {str(e)}")
+        return JSONResponse(status_code=500, content={"error": f"Voice generation failed: {str(e)}"})
 
 
 # =========================
-# Render-Compatible Entry
+# Entry
 # =========================
 
 if __name__ == "__main__":

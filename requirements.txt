@@ -1,6 +1,6 @@
-fastapi
-uvicorn
-langchain
-langchain-groq
-python-dotenv
-gtts
+fastapi==0.115.0
+uvicorn==0.30.6
+langchain==0.3.14
+langchain-groq==0.2.4
+python-dotenv==1.0.1
+gtts==2.5.3
