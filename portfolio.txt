@@ -14,7 +14,14 @@ I'm Jananth, an AI Engineer specializing in AI agents, model development, and fu
 
 ## Work Experience
 
-### AI Engineer at Tata Consultancy Services (Dec 2024 - Present)
+### Technical Consultant – AI Integration at IBM India Pvt. Ltd. (Jul 2026 - Present)
+Location: India
+- Consulting on AI integration strategies and implementing enterprise-grade AI solutions
+- Leveraging IBM watsonx.ai to build and deploy foundation models and AI workflows
+- Driving AI adoption across business units by bridging technical implementation with client requirements
+Technologies: watsonx.ai, Agentic AI, GenAI, Python, LangChain
+
+### AI Engineer at Tata Consultancy Services (Dec 2024 - Jun 2026)
 Location: Chennai, India
 - Led the AI integration for ContAI, enhancing global container tracking with GenAI APIs
 - Developed and deployed AI/ML systems into full-stack enterprise applications
@@ -38,10 +45,10 @@ Technologies: Angular, TypeScript, Keycloak, Three.js
 ## Skills & Expertise
 - Frontend: Angular, React, TypeScript, JavaScript, HTML, CSS, Tailwind CSS
 - Backend: Python, FastAPI, Flask, Node.js
-- AI/ML: TensorFlow, YOLO, CNN, scikit-learn, Pandas, Numpy
+- AI/ML: watsonx.ai, TensorFlow, YOLO, CNN, scikit-learn, Pandas, Numpy, LangChain, OpenCV
 - Databases: PostgreSQL, MongoDB, MySQL
 - DevOps: Git, GitHub, Docker
-- Cloud: Azure, Firebase
+- Cloud: Azure, Firebase, IBM Cloud
 - Other: Apache Kafka, Apache Beam, ML Flow, Three.js
 
 ## Featured Projects
